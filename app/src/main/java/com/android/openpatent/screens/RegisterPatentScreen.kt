@@ -103,59 +103,6 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
     }
 }
 
-@Composable
-fun PatentDialog(
-    onDismiss: () -> Unit,
-    onSave: (inventor: String, title: String, hash: String) -> Unit
-) {
-    var inventor by remember { mutableStateOf("") }
-    var title by remember { mutableStateOf("") }
-    var hash by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = { onDismiss() },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onSave(inventor, title, hash)
-                }
-            ) {
-                Text("Salvar")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text("Cancelar")
-            }
-        },
-        title = { Text("Nova Patente") },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = inventor,
-                    onValueChange = { inventor = it },
-                    label = { Text("Nome do Inventor") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Título da Invenção") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = hash,
-                    onValueChange = { hash = it },
-                    label = { Text("Hash da Patente") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        }
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 fun registerPatentPreview() {

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.android.openpatent.RegisterPatentActivity
-import com.android.openpatent.network.Block
+import com.android.openpatent.network.PatentData
 import com.android.openpatent.viewmodel.PatentViewModel
 import kotlin.math.roundToInt
 
@@ -39,7 +39,7 @@ fun MainScreen(activity: Activity, viewModel: PatentViewModel) {
         label = "drawer_offset"
     )
 
-    val selectedPatent = remember { mutableStateOf<Block?>(null) }
+    val selectedPatent = remember { mutableStateOf<PatentData?>(null) }
     val showDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -92,14 +92,14 @@ fun MainScreen(activity: Activity, viewModel: PatentViewModel) {
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Título: ${block.data.title}")
-                            Text("Inventor: ${block.data.inventor}")
+                            Text("Título: ${block.title}")
+                            Text("Inventor: ${block.inventor}")
                         }
                     }
                 }
 
                 if (showDialog.value && selectedPatent.value != null) {
-                    val block = selectedPatent.value!!
+                    val patent = selectedPatent.value!!
                     AlertDialog(
                         onDismissRequest = {
                             showDialog.value = false
@@ -118,10 +118,9 @@ fun MainScreen(activity: Activity, viewModel: PatentViewModel) {
                         },
                         text = {
                             Column {
-                                Text("Título: ${block.data.title}")
-                                Text("Inventor: ${block.data.inventor}")
-                                Text("Descrição: ${block.data.description}")
-                                Text("Timestamp: ${block.timestamp}")
+                                Text("Título: ${patent.title}")
+                                Text("Inventor: ${patent.inventor}")
+                                Text("Descrição: ${patent.description}")
                             }
                         },
                         properties = DialogProperties(dismissOnClickOutside = true)
