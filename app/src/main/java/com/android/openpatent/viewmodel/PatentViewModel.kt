@@ -2,8 +2,9 @@ package com.android.openpatent.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.android.openpatent.network.PatentData
+import com.android.openpatent.data.PatentData
 import com.android.openpatent.network.RetrofitService
+import com.android.openpatent.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -11,15 +12,16 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PatentViewModel : ViewModel() {
+class PatentViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     var message: String = ""
     private val call = RetrofitService.api
-    val _patents = MutableStateFlow<List<PatentData>>(emptyList())
+    private val _patents = MutableStateFlow<List<PatentData>>(emptyList())
     val patents: StateFlow<List<PatentData>> = _patents
 
-    fun registerPatent(inventor: String, title: String, description: String, onResult: (Boolean) -> Unit) {
-        val request = PatentData(inventor, title, description)
+    fun registerPatent(title: String, description: String, onResult: (Boolean) -> Unit) {
+        val inventorUsername = userRepository.getUsername()!!
+        val request = PatentData(inventorUsername, title, description)
 
         call.registerPatent(request).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {

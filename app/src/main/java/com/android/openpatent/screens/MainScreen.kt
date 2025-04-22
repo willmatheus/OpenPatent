@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.android.openpatent.RegisterPatentActivity
-import com.android.openpatent.network.PatentData
+import com.android.openpatent.data.PatentData
 import com.android.openpatent.viewmodel.PatentViewModel
 import kotlin.math.roundToInt
 
@@ -148,7 +148,10 @@ fun MainScreen(activity: Activity, viewModel: PatentViewModel) {
                         .padding(bottom = 16.dp),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                Button(onClick = { switchToRegisterActivity(activity) }) {
+                Button(onClick = {
+                    switchToRegisterActivity(activity)
+                    isDrawerOpen = false
+                }) {
                     Text("Registrar nova patente")
                 }
             }

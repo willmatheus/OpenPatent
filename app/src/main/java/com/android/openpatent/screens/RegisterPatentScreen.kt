@@ -1,5 +1,7 @@
 package com.android.openpatent.screens
 
+import android.app.Activity
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,13 +28,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.android.openpatent.repository.UserRepository
 import com.android.openpatent.ui.theme.OpenPatentTheme
 import com.android.openpatent.viewmodel.PatentViewModel
 
 @Composable
 fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavController) {
     var showDialog by remember { mutableStateOf(false) }
-    var inventor by remember { mutableStateOf("") }
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var feedback by remember { mutableStateOf("") }
@@ -66,12 +68,6 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
                 text = {
                     Column {
                         OutlinedTextField(
-                            value = inventor,
-                            onValueChange = { inventor = it },
-                            label = { Text("Inventor") }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(
                             value = title,
                             onValueChange = { title = it },
                             label = { Text("Título da Patente") }
@@ -86,7 +82,7 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
                 },
                 confirmButton = {
                     Button(onClick = {
-                        viewModel.registerPatent(inventor, title, description) {
+                        viewModel.registerPatent(title, description) {
                             navController.navigate("loading")
                         }
                     }) {
@@ -107,7 +103,7 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
 @Composable
 fun registerPatentPreview() {
     OpenPatentTheme {
-        RegisterPatentScreen(PatentViewModel(), rememberNavController())
+        RegisterPatentScreen(PatentViewModel(UserRepository(Activity())), rememberNavController())
     }
 }
 

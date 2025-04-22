@@ -1,5 +1,7 @@
 package com.android.openpatent.network
 
+import com.android.openpatent.data.PatentData
+import com.android.openpatent.data.UserData
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -8,19 +10,6 @@ import retrofit2.http.POST
 data class ApiResponse(
     val success: Boolean,
     val message: String
-)
-
-data class UserData(
-    val name: String,
-    val username: String,
-    val cpf: String,
-    val password: String,
-)
-
-data class PatentData(
-    val inventor: String,
-    val title: String,
-    val description: String
 )
 
 interface IPatentNetwork {

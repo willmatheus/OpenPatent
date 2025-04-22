@@ -2,14 +2,15 @@ package com.android.openpatent.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.android.openpatent.data.UserData
 import com.android.openpatent.network.ApiResponse
-import com.android.openpatent.network.UserData
 import com.android.openpatent.network.RetrofitService
+import com.android.openpatent.repository.UserRepository
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UserViewModel : ViewModel() {
+class UserViewModel(val userRepository: UserRepository) : ViewModel() {
 
     private val api = RetrofitService.api
 
@@ -20,6 +21,8 @@ class UserViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     val body = response.body()
                     Log.d("UserViewModel", "Mensagem: ${body?.message}")
+                    userRepository.saveUsername(username)
+                    userRepository.saveLoginStatus(true)
                     onResult(body?.success == true)
                 } else {
                     Log.e("UserViewModel", "Erro na resposta: ${response.errorBody()?.string()}")
