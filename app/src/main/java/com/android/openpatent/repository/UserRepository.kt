@@ -2,8 +2,14 @@ package com.android.openpatent.repository
 
 import android.content.Context
 import com.android.openpatent.SharedPrefsWrapper
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository(context: Context) {
+@Singleton
+class UserRepository @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     private val sharedPrefs = SharedPrefsWrapper(context)
 

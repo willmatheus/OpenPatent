@@ -12,16 +12,20 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PatentViewModel(private val userRepository: UserRepository) : ViewModel() {
+abstract class PatentViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     var message: String = ""
     private val call = RetrofitService.api
+
     private val _patents = MutableStateFlow<List<PatentData>>(emptyList())
     val patents: StateFlow<List<PatentData>> = _patents
 
-    fun registerPatent(title: String, description: String, onResult: (Boolean) -> Unit) {
+    private val _user_patents = MutableStateFlow<List<PatentData>>(emptyList())
+    val user_patents: StateFlow<List<PatentData>> = _user_patents
+
+    fun registerPatent(title: String, description: String, price: Double, onResult: (Boolean) -> Unit) {
         val inventorUsername = userRepository.getUsername()!!
-        val request = PatentData(inventorUsername, title, description)
+        val request = PatentData(inventorUsername, title, description, price)
 
         call.registerPatent(request).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
@@ -44,6 +48,25 @@ class PatentViewModel(private val userRepository: UserRepository) : ViewModel() 
             ) {
                 if (response.isSuccessful) {
                     _patents.value = response.body() ?: emptyList()
+                }
+            }
+
+            override fun onFailure(call: Call<List<PatentData>>, t: Throwable) {
+                Log.e("VM", "Erro ao carregar patentes: ${t.message}")
+            }
+        })
+    }
+
+    fun getUserPatents() {
+        val username = userRepository.getUsername()!!
+        call.getUserPatents(username).enqueue(object : Callback<List<PatentData>> {
+            override fun onResponse(
+                call: Call<List<PatentData>>,
+                response: Response<List<PatentData>>
+            ) {
+                Log.d("getUserPatents", "response: $username")
+                if (response.isSuccessful) {
+                    _user_patents.value = response.body() ?: emptyList()
                 }
             }
 

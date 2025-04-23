@@ -2,7 +2,7 @@ package com.android.openpatent.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.android.openpatent.data.UserData
+import com.android.openpatent.data.CreateUserData
 import com.android.openpatent.network.ApiResponse
 import com.android.openpatent.network.RetrofitService
 import com.android.openpatent.repository.UserRepository
@@ -10,12 +10,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class UserViewModel(val userRepository: UserRepository) : ViewModel() {
+abstract class UserViewModel(val userRepository: UserRepository) : ViewModel() {
 
     private val api = RetrofitService.api
 
     fun registerUser(name: String, username: String, cpf: String, password: String, onResult: (Boolean) -> Unit) {
-        val user = UserData(name, username, cpf, password)
+        val user = CreateUserData(name, username, cpf, password)
         api.registerUser(user).enqueue(object : Callback<ApiResponse> {
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                 if (response.isSuccessful) {

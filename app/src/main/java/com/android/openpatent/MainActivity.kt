@@ -4,30 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.android.openpatent.repository.UserRepository
-import com.android.openpatent.screens.MainScreen
+import androidx.activity.viewModels
+import com.android.openpatent.screens.AppNavigation
 import com.android.openpatent.ui.theme.OpenPatentTheme
-import com.android.openpatent.viewmodel.PatentViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private lateinit var patentViewModel: PatentViewModel
+    private val hiltPatentViewModel: HiltPatentViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val userRepository = UserRepository(applicationContext)
-        patentViewModel = PatentViewModel(userRepository)
         enableEdgeToEdge()
         setContent {
             OpenPatentTheme {
-                MainScreen(this, patentViewModel)
+                AppNavigation(hiltPatentViewModel)
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        patentViewModel.getPatents()
+        hiltPatentViewModel.getPatents()
     }
 }
 

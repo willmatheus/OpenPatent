@@ -1,13 +1,9 @@
 package com.android.openpatent.screens
 
-import android.app.Activity
-import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -26,9 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.android.openpatent.repository.UserRepository
 import com.android.openpatent.ui.theme.OpenPatentTheme
 import com.android.openpatent.viewmodel.PatentViewModel
 
@@ -37,6 +33,7 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
     var showDialog by remember { mutableStateOf(false) }
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
     var feedback by remember { mutableStateOf("") }
 
     Surface(
@@ -78,11 +75,17 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
                             onValueChange = { description = it },
                             label = { Text("Descricao da Patente") }
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = price,
+                            onValueChange = { price = it },
+                            label = { Text("Preco da patente") }
+                        )
                     }
                 },
                 confirmButton = {
                     Button(onClick = {
-                        viewModel.registerPatent(title, description) {
+                        viewModel.registerPatent(title, description, price.toDouble()) {
                             navController.navigate("loading")
                         }
                     }) {
@@ -103,7 +106,7 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
 @Composable
 fun registerPatentPreview() {
     OpenPatentTheme {
-        RegisterPatentScreen(PatentViewModel(UserRepository(Activity())), rememberNavController())
+        RegisterPatentScreen(viewModel(), rememberNavController())
     }
 }
 

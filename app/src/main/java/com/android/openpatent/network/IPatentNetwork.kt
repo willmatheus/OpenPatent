@@ -1,5 +1,6 @@
 package com.android.openpatent.network
 
+import com.android.openpatent.data.CreateUserData
 import com.android.openpatent.data.PatentData
 import com.android.openpatent.data.UserData
 import retrofit2.Call
@@ -16,7 +17,7 @@ interface IPatentNetwork {
 
     // Usuários
     @POST("blockchain/register-user")
-    fun registerUser(@Body user: UserData): Call<ApiResponse>
+    fun registerUser(@Body user: CreateUserData): Call<ApiResponse>
 
     @POST("blockchain/login")
     fun login(@Body loginData: UserData): Call<String>
@@ -30,6 +31,9 @@ interface IPatentNetwork {
 
     @GET("blockchain/patents")
     fun getAllPatents(): Call<List<PatentData>>
+
+    @POST("blockchain/user-patents")
+    fun getUserPatents(@Body username: String): Call<List<PatentData>>
 
     // Blockchain
     @GET("blockchain/validate")
