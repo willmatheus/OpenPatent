@@ -2,6 +2,7 @@ package com.android.openpatent.screens
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
@@ -39,6 +40,7 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
 
     val selectedPatent = remember { mutableStateOf<PatentData?>(null) }
     val showDialog = remember { mutableStateOf(false) }
+    val walletValue = remember { (1000..9999).random() }
 
     LaunchedEffect(Unit) {
         viewModel.getPatents()
@@ -72,11 +74,37 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
-                Text(
-                    "Patentes registradas",
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "Patentes registradas",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp)) // Espaço manual entre os itens
+
+                    Box(
+                        modifier = Modifier
+                            .defaultMinSize(minWidth = 120.dp) // largura mínima
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.primary,
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "Carteira: $walletValue bytecoins",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
 
                 patentList.forEach { block ->
                     Card(
@@ -98,6 +126,8 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
 
                 if (showDialog.value && selectedPatent.value != null) {
                     val patent = selectedPatent.value!!
+                    val showConfirmDialog = remember { mutableStateOf(false) }
+
                     AlertDialog(
                         onDismissRequest = {
                             showDialog.value = false
@@ -111,6 +141,13 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
                                 Text("Fechar")
                             }
                         },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                showConfirmDialog.value = true
+                            }) {
+                                Text("Comprar patente")
+                            }
+                        },
                         title = {
                             Text("Detalhes da Patente")
                         },
@@ -119,10 +156,40 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
                                 Text("Título: ${patent.title}")
                                 Text("Inventor: ${patent.inventor}")
                                 Text("Descrição: ${patent.description}")
+                                Text("Preco: ${patent.price} Bytecoins")
                             }
                         },
                         properties = DialogProperties(dismissOnClickOutside = true)
                     )
+
+                    if (showConfirmDialog.value) {
+                        AlertDialog(
+                            onDismissRequest = { showConfirmDialog.value = false },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    // Ação ainda não implementada
+                                    showConfirmDialog.value = false
+                                    navController.navigate("loading")
+                                }) {
+                                    Text("Sim")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = {
+                                    showConfirmDialog.value = false
+                                }) {
+                                    Text("Cancelar")
+                                }
+                            },
+                            title = {
+                                Text("Confirmar compra")
+                            },
+                            text = {
+                                Text("Você tem certeza que deseja comprar esta patente?")
+                            },
+                            properties = DialogProperties(dismissOnClickOutside = true)
+                        )
+                    }
                 }
             }
         }
@@ -175,7 +242,7 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp)
                 ) {
-                    Text("Ir para outra tela")
+                    Text("Minhas patentes")
                 }
             }
         }

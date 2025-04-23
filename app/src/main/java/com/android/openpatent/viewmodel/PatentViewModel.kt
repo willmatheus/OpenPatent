@@ -75,4 +75,23 @@ abstract class PatentViewModel(private val userRepository: UserRepository) : Vie
             }
         })
     }
+
+    fun buyPatent(patent: PatentData) {
+        val username = userRepository.getUsername()!!
+        call.getUserPatents(username).enqueue(object : Callback<List<PatentData>> {
+            override fun onResponse(
+                call: Call<List<PatentData>>,
+                response: Response<List<PatentData>>
+            ) {
+                Log.d("getUserPatents", "response: $username")
+                if (response.isSuccessful) {
+                    _user_patents.value = response.body() ?: emptyList()
+                }
+            }
+
+            override fun onFailure(call: Call<List<PatentData>>, t: Throwable) {
+                Log.e("VM", "Erro ao carregar patentes: ${t.message}")
+            }
+        })
+    }
 }
