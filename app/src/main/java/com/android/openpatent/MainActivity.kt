@@ -12,21 +12,22 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val hiltPatentViewModel: HiltPatentViewModel by viewModels()
+    private val patentViewModel: HiltPatentViewModel by viewModels()
+    private val userViewModel: HiltUserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             OpenPatentTheme {
-                AppNavigation(hiltPatentViewModel)
+                AppNavigation(patentViewModel, userViewModel)
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        hiltPatentViewModel.getPatents()
+        patentViewModel.getPatents()
     }
 }
 

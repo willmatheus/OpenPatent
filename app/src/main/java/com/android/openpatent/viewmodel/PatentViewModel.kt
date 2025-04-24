@@ -3,6 +3,7 @@ package com.android.openpatent.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.android.openpatent.data.PatentData
+import com.android.openpatent.network.BuyPatent
 import com.android.openpatent.network.RetrofitService
 import com.android.openpatent.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,9 @@ abstract class PatentViewModel(private val userRepository: UserRepository) : Vie
 
     private val _user_patents = MutableStateFlow<List<PatentData>>(emptyList())
     val user_patents: StateFlow<List<PatentData>> = _user_patents
+
+    private val _is_patent_accquired = MutableStateFlow(false)
+    val is_patent_accquired: StateFlow<Boolean> = _is_patent_accquired
 
     fun registerPatent(title: String, description: String, price: Double, onResult: (Boolean) -> Unit) {
         val inventorUsername = userRepository.getUsername()!!
@@ -78,18 +82,18 @@ abstract class PatentViewModel(private val userRepository: UserRepository) : Vie
 
     fun buyPatent(patent: PatentData) {
         val username = userRepository.getUsername()!!
-        call.getUserPatents(username).enqueue(object : Callback<List<PatentData>> {
+        val buyPatent = BuyPatent(patent, username)
+        call.buyPatent(buyPatent).enqueue(object : Callback<Boolean> {
             override fun onResponse(
-                call: Call<List<PatentData>>,
-                response: Response<List<PatentData>>
+                call: Call<Boolean>,
+                response: Response<Boolean>
             ) {
-                Log.d("getUserPatents", "response: $username")
                 if (response.isSuccessful) {
-                    _user_patents.value = response.body() ?: emptyList()
+                    _is_patent_accquired.value = response.body() ?: false
                 }
             }
 
-            override fun onFailure(call: Call<List<PatentData>>, t: Throwable) {
+            override fun onFailure(call: Call<Boolean>, t: Throwable) {
                 Log.e("VM", "Erro ao carregar patentes: ${t.message}")
             }
         })

@@ -22,11 +22,14 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.android.openpatent.data.PatentData
 import com.android.openpatent.viewmodel.PatentViewModel
+import com.android.openpatent.viewmodel.UserViewModel
 import kotlin.math.roundToInt
 
 @Composable
-fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
+fun MainScreen(navController: NavController, viewModel: PatentViewModel, userViewModel: UserViewModel) {
     val patentList by viewModel.patents.collectAsState()
+    val walletValue by userViewModel.wallet.collectAsState()
+    val isPatentAccquired by viewModel.is_patent_accquired.collectAsState()
     val drawerWidth = 300.dp
     val drawerWidthPx = with(LocalDensity.current) { drawerWidth.toPx() }
 
@@ -40,10 +43,10 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
 
     val selectedPatent = remember { mutableStateOf<PatentData?>(null) }
     val showDialog = remember { mutableStateOf(false) }
-    val walletValue = remember { (1000..9999).random() }
 
     LaunchedEffect(Unit) {
         viewModel.getPatents()
+        userViewModel.getUserWallet()
     }
 
     val paddingValues = WindowInsets.systemBars.asPaddingValues()
@@ -168,6 +171,7 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel) {
                             confirmButton = {
                                 TextButton(onClick = {
                                     // Ação ainda não implementada
+                                    viewModel.buyPatent(patent)
                                     showConfirmDialog.value = false
                                     navController.navigate("loading")
                                 }) {

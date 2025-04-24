@@ -13,6 +13,11 @@ data class ApiResponse(
     val message: String
 )
 
+data class BuyPatent(
+    val patent: PatentData,
+    val username: String
+)
+
 interface IPatentNetwork {
 
     // Usuários
@@ -25,9 +30,14 @@ interface IPatentNetwork {
     @GET("blockchain/users")
     fun getAllUsers(): Call<List<UserData>>
 
-    // Patentes
+    @POST("blockchain/user")
+    fun getUser(@Body username: String): Call<UserData>
+
     @POST("blockchain/register-patent")
     fun registerPatent(@Body patent: PatentData): Call<String>
+
+    @POST("blockchain/buy-patent")
+    fun buyPatent(@Body buyPatent: BuyPatent): Call<Boolean>
 
     @GET("blockchain/patents")
     fun getAllPatents(): Call<List<PatentData>>
