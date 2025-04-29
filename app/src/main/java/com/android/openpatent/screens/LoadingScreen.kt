@@ -63,7 +63,7 @@ fun LoadingScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Patente registrada!",
+                        text = "Sucesso!",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }

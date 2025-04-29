@@ -2,6 +2,7 @@ package com.android.openpatent.network
 
 import com.android.openpatent.data.CreateUserData
 import com.android.openpatent.data.PatentData
+import com.android.openpatent.data.RegisterPatent
 import com.android.openpatent.data.UserData
 import retrofit2.Call
 import retrofit2.http.Body
@@ -34,7 +35,7 @@ interface IPatentNetwork {
     fun getUser(@Body username: String): Call<UserData>
 
     @POST("blockchain/register-patent")
-    fun registerPatent(@Body patent: PatentData): Call<String>
+    fun registerPatent(@Body patent: RegisterPatent): Call<String>
 
     @POST("blockchain/buy-patent")
     fun buyPatent(@Body buyPatent: BuyPatent): Call<Boolean>

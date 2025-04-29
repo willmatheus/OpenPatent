@@ -3,7 +3,6 @@ package com.android.openpatent.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.android.openpatent.data.CreateUserData
-import com.android.openpatent.data.PatentData
 import com.android.openpatent.data.UserData
 import com.android.openpatent.network.ApiResponse
 import com.android.openpatent.network.RetrofitService

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import androidx.navigation.Navigator
 import com.android.openpatent.data.PatentData
 import com.android.openpatent.viewmodel.PatentViewModel
 import com.android.openpatent.viewmodel.UserViewModel
@@ -122,6 +123,7 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel, userVie
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("Título: ${block.title}")
+                            Text("Data de registro: ${block.registrationDate}")
                             Text("Inventor: ${block.inventor}")
                         }
                     }
@@ -158,6 +160,7 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel, userVie
                             Column {
                                 Text("Título: ${patent.title}")
                                 Text("Inventor: ${patent.inventor}")
+                                Text("Data de registro: ${patent.registrationDate}")
                                 Text("Descrição: ${patent.description}")
                                 Text("Preco: ${patent.price} Bytecoins")
                             }
@@ -173,7 +176,7 @@ fun MainScreen(navController: NavController, viewModel: PatentViewModel, userVie
                                     // Ação ainda não implementada
                                     viewModel.buyPatent(patent)
                                     showConfirmDialog.value = false
-                                    navController.navigate("loading")
+                                    navController.navigate("loading", null)
                                 }) {
                                     Text("Sim")
                                 }

@@ -3,6 +3,7 @@ package com.android.openpatent.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.android.openpatent.data.PatentData
+import com.android.openpatent.data.RegisterPatent
 import com.android.openpatent.network.BuyPatent
 import com.android.openpatent.network.RetrofitService
 import com.android.openpatent.repository.UserRepository
@@ -29,7 +30,7 @@ abstract class PatentViewModel(private val userRepository: UserRepository) : Vie
 
     fun registerPatent(title: String, description: String, price: Double, onResult: (Boolean) -> Unit) {
         val inventorUsername = userRepository.getUsername()!!
-        val request = PatentData(inventorUsername, title, description, price)
+        val request = RegisterPatent(inventorUsername, title, description, price)
 
         call.registerPatent(request).enqueue(object : Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
@@ -83,6 +84,7 @@ abstract class PatentViewModel(private val userRepository: UserRepository) : Vie
     fun buyPatent(patent: PatentData) {
         val username = userRepository.getUsername()!!
         val buyPatent = BuyPatent(patent, username)
+        Log.e("PatentViewModel", "PatentData: $patent")
         call.buyPatent(buyPatent).enqueue(object : Callback<Boolean> {
             override fun onResponse(
                 call: Call<Boolean>,

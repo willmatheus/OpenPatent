@@ -28,7 +28,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -121,6 +120,7 @@ fun UserPatentsScreen(navController: NavController, viewModel: PatentViewModel) 
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text("Título: ${block.title}")
+                            Text("Data de registro: ${block.registrationDate}")
                             Text("Inventor: ${block.inventor}")
                         }
                     }
