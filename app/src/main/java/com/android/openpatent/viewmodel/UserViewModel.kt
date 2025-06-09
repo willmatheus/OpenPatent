@@ -1,63 +1,56 @@
 package com.android.openpatent.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.openpatent.data.CreateUserData
-import com.android.openpatent.data.UserData
-import com.android.openpatent.network.ApiResponse
-import com.android.openpatent.network.RetrofitService
+import com.android.openpatent.data.PatentData
+import com.android.openpatent.data.UserUiState
 import com.android.openpatent.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-abstract class UserViewModel(val userRepository: UserRepository) : ViewModel() {
+abstract class UserViewModel(private val userRepository: UserRepository) : ViewModel() {
 
-    private val api = RetrofitService.api
+    private val _uiState = MutableStateFlow(
+        UserUiState(
+            onLaunch = ::onLaunch,
+            onRegisterUser = ::onRegisterUser,
+            userPatents = emptyList()
+        )
+    )
 
-    private val _wallet = MutableStateFlow(0.0)
-    val wallet: StateFlow<Double> = _wallet
+    val uiState = _uiState.asStateFlow()
 
-    fun registerUser(name: String, username: String, cpf: String, password: String, onResult: (Boolean) -> Unit) {
-        val user = CreateUserData(name, username, cpf, password)
-        api.registerUser(user).enqueue(object : Callback<ApiResponse> {
-            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    Log.d("UserViewModel", "Mensagem: ${body?.message}")
-                    userRepository.saveUsername(username)
-                    userRepository.saveLoginStatus(true)
-                    onResult(body?.success == true)
-                } else {
-                    Log.e("UserViewModel", "Erro na resposta: ${response.errorBody()?.string()}")
-                    onResult(false)
-                }
+    private fun onLaunch() {
+        viewModelScope.launch {
+            _uiState.update { update ->
+                update.copy(
+                    userPatents = getUserPatents(),
+                    userWallet = getUserWallet(),
+                    isLoading = false
+                )
             }
-
-            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                Log.e("UserViewModel", "Erro: ${t.message}")
-                onResult(false)
-            }
-        })
+        }
     }
 
-    fun getUserWallet() {
-        api.getUser(userRepository.getUsername()!!).enqueue(object : Callback<UserData> {
-            override fun onResponse(call: Call<UserData>, response: Response<UserData>) {
-                if (response.isSuccessful) {
-                    _wallet.value = response.body()?.wallet ?: 0.0
-                    Log.d("UserViewModel", "_wallet.value: ${_wallet.value}")
-
-                } else {
-                    Log.e("UserViewModel", "Erro na resposta: ${response.errorBody()?.string()}")
-                }
+    private fun onRegisterUser(createUserData: CreateUserData) {
+        viewModelScope.launch {
+            _uiState.update { update ->
+                update.copy(
+                    isUserRegistered = registerUser(createUserData)
+                )
             }
-
-            override fun onFailure(call: Call<UserData>, t: Throwable) {
-                Log.e("UserViewModel", "Erro: ${t.message}")
-            }
-        })
+        }
     }
+
+    private suspend fun getUserPatents() : List<PatentData> =
+        userRepository.getUserPatents()
+
+    private suspend fun registerUser(createUserData: CreateUserData) : Boolean =
+        userRepository.registerUser(createUserData)
+
+    private suspend fun getUserWallet() : Double =
+        userRepository.getUserWallet()
 }

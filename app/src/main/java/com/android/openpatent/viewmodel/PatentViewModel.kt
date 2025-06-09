@@ -1,103 +1,74 @@
 package com.android.openpatent.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.openpatent.data.PatentData
+import com.android.openpatent.data.PatentUiState
 import com.android.openpatent.data.RegisterPatent
-import com.android.openpatent.network.BuyPatent
-import com.android.openpatent.network.RetrofitService
+import com.android.openpatent.repository.PatentRepository
 import com.android.openpatent.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+abstract class PatentViewModel(
+    private val userRepository: UserRepository,
+    private val patentRepository: PatentRepository
+) : ViewModel() {
 
-abstract class PatentViewModel(private val userRepository: UserRepository) : ViewModel() {
+    private val _uiState = MutableStateFlow(
+        PatentUiState(
+            onLaunch = ::loadAllPatents,
+            onRegisterPatent = ::onRegisterPatent,
+            onBuyPatent = ::onBuyPatent,
+            getAllPatents = emptyList(),
+        )
+    )
 
-    var message: String = ""
-    private val call = RetrofitService.api
+    val uiState = _uiState.asStateFlow()
 
-    private val _patents = MutableStateFlow<List<PatentData>>(emptyList())
-    val patents: StateFlow<List<PatentData>> = _patents
-
-    private val _user_patents = MutableStateFlow<List<PatentData>>(emptyList())
-    val user_patents: StateFlow<List<PatentData>> = _user_patents
-
-    private val _is_patent_accquired = MutableStateFlow(false)
-    val is_patent_accquired: StateFlow<Boolean> = _is_patent_accquired
-
-    fun registerPatent(title: String, description: String, price: Double, onResult: (Boolean) -> Unit) {
-        val inventorUsername = userRepository.getUsername()!!
-        val request = RegisterPatent(inventorUsername, title, description, price)
-
-        call.registerPatent(request).enqueue(object : Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                message = response.body() ?: "Erro desconhecido"
-                onResult(true)
+    private fun loadAllPatents() {
+        viewModelScope.launch {
+            _uiState.update { update ->
+                update.copy (
+                    getAllPatents = getAllPatents(),
+                    isLoading = false
+                )
             }
-
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                message = "Falha: ${t.localizedMessage}"
-                onResult(false)
-            }
-        })
+        }
     }
 
-    fun getPatents() {
-        call.getAllPatents().enqueue(object : Callback<List<PatentData>> {
-            override fun onResponse(
-                call: Call<List<PatentData>>,
-                response: Response<List<PatentData>>
-            ) {
-                if (response.isSuccessful) {
-                    _patents.value = response.body() ?: emptyList()
-                }
+    private fun onRegisterPatent(patent: RegisterPatent) {
+        viewModelScope.launch {
+            _uiState.update { update ->
+                update.copy (
+                    isPatentRegistered = registerPatent(patent),
+                    isLoading = false
+                )
             }
-
-            override fun onFailure(call: Call<List<PatentData>>, t: Throwable) {
-                Log.e("VM", "Erro ao carregar patentes: ${t.message}")
-            }
-        })
+        }
     }
 
-    fun getUserPatents() {
+    private fun onBuyPatent(patent: PatentData) {
+        viewModelScope.launch {
+            _uiState.update { update ->
+                update.copy (
+                    isPatentPurchased = buyPatent(patent),
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    private suspend fun registerPatent(patent: RegisterPatent) : Boolean =
+        patentRepository.registerPatent(patent)
+
+    private suspend fun getAllPatents() : List<PatentData> =
+        patentRepository.getAllPatents()
+
+    private suspend fun buyPatent(patent: PatentData) : Boolean {
         val username = userRepository.getUsername()!!
-        call.getUserPatents(username).enqueue(object : Callback<List<PatentData>> {
-            override fun onResponse(
-                call: Call<List<PatentData>>,
-                response: Response<List<PatentData>>
-            ) {
-                Log.d("getUserPatents", "response: $username")
-                if (response.isSuccessful) {
-                    _user_patents.value = response.body() ?: emptyList()
-                }
-            }
-
-            override fun onFailure(call: Call<List<PatentData>>, t: Throwable) {
-                Log.e("VM", "Erro ao carregar patentes: ${t.message}")
-            }
-        })
-    }
-
-    fun buyPatent(patent: PatentData) {
-        val username = userRepository.getUsername()!!
-        val buyPatent = BuyPatent(patent, username)
-        Log.e("PatentViewModel", "PatentData: $patent")
-        call.buyPatent(buyPatent).enqueue(object : Callback<Boolean> {
-            override fun onResponse(
-                call: Call<Boolean>,
-                response: Response<Boolean>
-            ) {
-                if (response.isSuccessful) {
-                    _is_patent_accquired.value = response.body() ?: false
-                }
-            }
-
-            override fun onFailure(call: Call<Boolean>, t: Throwable) {
-                Log.e("VM", "Erro ao carregar patentes: ${t.message}")
-            }
-        })
+        return patentRepository.buyPatent(patent, username)
     }
 }

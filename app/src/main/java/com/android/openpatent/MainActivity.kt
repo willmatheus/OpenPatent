@@ -20,14 +20,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             OpenPatentTheme {
-                AppNavigation(patentViewModel, userViewModel)
+                AppNavigation(
+                    patentViewModel, userViewModel, this
+                )
             }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        patentViewModel.getPatents()
     }
 }
 

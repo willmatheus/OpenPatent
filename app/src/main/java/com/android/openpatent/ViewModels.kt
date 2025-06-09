@@ -1,5 +1,6 @@
 package com.android.openpatent
 
+import com.android.openpatent.repository.PatentRepository
 import com.android.openpatent.repository.UserRepository
 import com.android.openpatent.viewmodel.PatentViewModel
 import com.android.openpatent.viewmodel.UserViewModel
@@ -13,5 +14,6 @@ class HiltUserViewModel @Inject constructor(
 
 @HiltViewModel
 class HiltPatentViewModel @Inject constructor(
-    userRepository: UserRepository
-) : PatentViewModel(userRepository)
+    userRepository: UserRepository,
+    patentRepository: PatentRepository
+) : PatentViewModel(userRepository, patentRepository)

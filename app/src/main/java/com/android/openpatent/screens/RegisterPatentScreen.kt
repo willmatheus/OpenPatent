@@ -27,11 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.android.openpatent.data.PatentUiState
+import com.android.openpatent.data.RegisterPatent
 import com.android.openpatent.ui.theme.OpenPatentTheme
-import com.android.openpatent.viewmodel.PatentViewModel
 
 @Composable
-fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavController) {
+fun RegisterPatentScreen(uiState: PatentUiState, navController: NavController, username: String) {
     var showDialog by remember { mutableStateOf(false) }
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -88,7 +89,9 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
                 },
                 confirmButton = {
                     Button(onClick = {
-                        viewModel.registerPatent(title, description, price.toDouble()) {
+                        val patent = RegisterPatent(username, title, description, price.toDouble())
+                        uiState.onRegisterPatent(patent)
+                        if (uiState.isPatentRegistered) {
                             navController.navigate("loading")
                         }
                     }) {
@@ -109,7 +112,10 @@ fun RegisterPatentScreen(viewModel: PatentViewModel, navController: NavControlle
 @Composable
 fun registerPatentPreview() {
     OpenPatentTheme {
-        RegisterPatentScreen(viewModel(), rememberNavController())
+        RegisterPatentScreen(
+            viewModel(), rememberNavController(),
+            username = TODO()
+        )
     }
 }
 

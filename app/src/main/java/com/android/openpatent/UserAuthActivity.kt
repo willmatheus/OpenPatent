@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.collectAsState
 import com.android.openpatent.repository.UserRepository
 import com.android.openpatent.screens.RegisterUserScreen
 import com.android.openpatent.ui.theme.OpenPatentTheme
@@ -24,7 +25,7 @@ class UserAuthActivity : ComponentActivity() {
         } else {
             setContent {
                 OpenPatentTheme {
-                    RegisterUserScreen(hiltUserViewModel, {
+                    RegisterUserScreen(hiltUserViewModel.uiState.collectAsState().value, {
                         startActivity(Intent(this, MainActivity::class.java))
                         finishAndRemoveTask()
                     }, { finishAndRemoveTask() })

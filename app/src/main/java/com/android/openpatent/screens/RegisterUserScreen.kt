@@ -1,21 +1,34 @@
 package com.android.openpatent.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.android.openpatent.SharedPrefsWrapper
-import com.android.openpatent.viewmodel.UserViewModel
+import com.android.openpatent.data.CreateUserData
+import com.android.openpatent.data.UserUiState
 
 @Composable
 fun RegisterUserScreen(
-    userViewModel: UserViewModel,
+    userUiState: UserUiState,
     onRegistrationSuccess: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -105,14 +118,10 @@ fun RegisterUserScreen(
                     return@Button
                 }
                 isLoading = true
-                userViewModel.registerUser(name, username, cpf, password) { success ->
-                    isLoading = false
-                    if (success) {
-                        message = "Usuário registrado com sucesso!"
-                        onRegistrationSuccess()
-                    } else {
-                        message = "Falha ao registrar usuário."
-                    }
+                val user = CreateUserData(name, username, cpf, password)
+                userUiState.onRegisterUser(user)
+                if (userUiState.isUserRegistered) {
+                    onRegistrationSuccess()
                 }
             },
             modifier = Modifier.fillMaxWidth(),

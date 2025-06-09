@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,12 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.android.openpatent.data.PatentData
-import com.android.openpatent.viewmodel.PatentViewModel
+import com.android.openpatent.data.UserUiState
 import kotlin.math.roundToInt
 
 @Composable
-fun UserPatentsScreen(navController: NavController, viewModel: PatentViewModel) {
-    val patentList by viewModel.user_patents.collectAsState()
+fun UserPatentsScreen(navController: NavController, userUiState: UserUiState) {
     val drawerWidth = 300.dp
     val drawerWidthPx = with(LocalDensity.current) { drawerWidth.toPx() }
 
@@ -70,7 +67,7 @@ fun UserPatentsScreen(navController: NavController, viewModel: PatentViewModel) 
     val showDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.getUserPatents()
+        userUiState.onLaunch()
     }
 
     val paddingValues = WindowInsets.systemBars.asPaddingValues()
@@ -107,7 +104,7 @@ fun UserPatentsScreen(navController: NavController, viewModel: PatentViewModel) 
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                patentList.forEach { block ->
+                userUiState.userPatents.forEach { block ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
