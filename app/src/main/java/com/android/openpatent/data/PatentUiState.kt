@@ -7,5 +7,5 @@ data class PatentUiState(
     val isPatentRegistered: Boolean = false,
     val isPatentPurchased: Boolean = false,
     val isLoading: Boolean = true,
-    val getAllPatents: List<PatentData> = emptyList(),
+    val getAllPatents: List<PatentData>,
 )

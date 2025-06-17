@@ -3,7 +3,7 @@ agp = "8.7.3"
 kotlin = "2.1.20"
 coreKtx = "1.16.0"
 junit = "4.13.2"
-junitVersion = "1.2.1"
+junitVersion = "1.1.5"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
@@ -14,6 +14,8 @@ lifecycle = "2.8.7"
 hilt = "2.56.1"
 hiltCompose = "1.2.0"
 ksp = "2.1.20-1.0.32"
+web3core = "4.12.0"
+metamaskAndroidSdk = "0.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,10 +39,12 @@ lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltCompose" }
+web3core = { module = "org.web3j:core", version.ref = "web3core" }
+metamask-android-sdk = { module = "io.metamask.androidsdk:metamask-android-sdk", version.ref = "metamaskAndroidSdk" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "1.9.24" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

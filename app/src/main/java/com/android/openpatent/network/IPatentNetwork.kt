@@ -41,7 +41,7 @@ interface IPatentNetwork {
     fun buyPatent(@Body buyPatent: BuyPatent): Call<Boolean>
 
     @GET("blockchain/patents")
-    fun getAllPatents(): Call<List<PatentData>>
+    suspend fun getAllPatents(): List<PatentData>
 
     @POST("blockchain/user-patents")
     fun getUserPatents(@Body username: String): Call<List<PatentData>>

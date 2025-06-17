@@ -14,6 +14,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import com.android.openpatent.data.UserUiState
 @Composable
 fun RegisterUserScreen(
     userUiState: UserUiState,
+    onConnectToMetamask: () -> Unit,
     onRegistrationSuccess: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -39,6 +41,10 @@ fun RegisterUserScreen(
     var confirmPassword by remember { mutableStateOf("") }
     var message by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        userUiState.onLaunch()
+    }
 
     Column(
         modifier = Modifier
@@ -108,26 +114,22 @@ fun RegisterUserScreen(
 
         Button(
             onClick = {
-                message = null
-                if (name.isBlank() || cpf.isBlank() || username.isBlank() || password.isBlank()) {
-                    message = "Preencha todos os campos."
-                    return@Button
-                }
-                if (password != confirmPassword) {
-                    message = "As senhas não conferem."
-                    return@Button
-                }
                 isLoading = true
-                val user = CreateUserData(name, username, cpf, password)
-                userUiState.onRegisterUser(user)
-                if (userUiState.isUserRegistered) {
-                    onRegistrationSuccess()
+                message = null
+                try {
+                    onConnectToMetamask()
+                    val user = CreateUserData(name, username, cpf, password)
+                    userUiState.onRegisterUser(user)
+                    message = "Carteira conectada com sucesso!"
+                } catch (e: Exception) {
+                    message = "Erro ao conectar carteira: ${e.message}"
+                } finally {
+                    isLoading = false
                 }
             },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(if (isLoading) "Cadastrando..." else "Cadastrar")
+            Text("Conectar com MetaMask")
         }
 
         Spacer(modifier = Modifier.height(12.dp))

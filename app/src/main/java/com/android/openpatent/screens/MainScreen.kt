@@ -131,7 +131,7 @@ fun MainScreen(navController: NavController, uiState: PatentUiState, userUiState
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = "Carteira: ${userUiState.userWallet} bytecoins",
+                            text = "Carteira: 0.0 SepoliaETH",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary
                         )

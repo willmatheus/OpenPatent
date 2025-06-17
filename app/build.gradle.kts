@@ -23,6 +23,10 @@ android {
     packaging {
         resources {
             excludes += "META-INF/gradle/incremental.annotation.processors"
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+            excludes += "/META-INF/DISCLAIMER"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
         }
     }
 
@@ -36,11 +40,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -61,9 +65,14 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation("androidx.compose.foundation:foundation:1.5.0")
+    implementation("org.web3j:codegen:4.9.4")
+    implementation(libs.web3core)
+    implementation(libs.metamask.android.sdk)
+
+    ksp(libs.hilt.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -14,28 +14,18 @@ import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
 
-class PatentRepository@Inject constructor(
+class PatentRepository @Inject constructor(
     @ApplicationContext context: Context
 ) {
     private val call = RetrofitService.api
 
-    suspend fun getAllPatents() = withContext(Dispatchers.IO) {
-        var patentList: List<PatentData> = emptyList()
-        call.getAllPatents().enqueue(object : Callback<List<PatentData>> {
-            override fun onResponse(
-                call: Call<List<PatentData>>,
-                response: Response<List<PatentData>>
-            ) {
-                if (response.isSuccessful) {
-                    patentList = response.body() ?: emptyList()
-                }
-            }
-
-            override fun onFailure(call: Call<List<PatentData>>, t: Throwable) {
-                Log.e("VM", "Erro ao carregar patentes: ${t.message}")
-            }
-        })
-        patentList
+    suspend fun getAllPatents() = try {
+        val response = RetrofitService.api.getAllPatents()
+        Log.d("PatentRepository", "PatentList: $response")
+        response
+    } catch (e: Exception) {
+        Log.e("PatentRepository", "Erro ao carregar patentes: ${e.message}")
+        emptyList()
     }
 
     suspend fun registerPatent(patent: RegisterPatent) : Boolean = withContext(Dispatchers.IO) {

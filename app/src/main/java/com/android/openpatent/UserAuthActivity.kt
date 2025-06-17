@@ -26,9 +26,20 @@ class UserAuthActivity : ComponentActivity() {
             setContent {
                 OpenPatentTheme {
                     RegisterUserScreen(hiltUserViewModel.uiState.collectAsState().value, {
+                        hiltUserViewModel.connectToMetaMask(
+                            onSuccess = {
+                                startActivity(Intent(this, MainActivity::class.java))
+                                finishAndRemoveTask()
+                            }
+                        )
+                    }, {
                         startActivity(Intent(this, MainActivity::class.java))
                         finishAndRemoveTask()
-                    }, { finishAndRemoveTask() })
+                    },
+                        {
+                            finishAndRemoveTask()
+                        }
+                    )
                 }
             }
         }

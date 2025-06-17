@@ -90,10 +90,7 @@ fun RegisterPatentScreen(uiState: PatentUiState, navController: NavController, u
                 confirmButton = {
                     Button(onClick = {
                         val patent = RegisterPatent(username, title, description, price.toDouble())
-                        uiState.onRegisterPatent(patent)
-                        if (uiState.isPatentRegistered) {
-                            navController.navigate("loading")
-                        }
+                        uiState.onRegisterPatent(patent).also{ navController.navigate("loading") }
                     }) {
                         Text("Registrar")
                     }
